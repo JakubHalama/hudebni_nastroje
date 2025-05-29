@@ -1,0 +1,48 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvoření hudebního nástroje</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <style>
+        /* Přidání efektu zvětšení při hover na tlačítka */
+        .btn:hover {
+            transform: scale(1.1);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Nastavení vlastní šířky pro celou stránku */
+        .custom-container {
+            max-width: 800px;  /* Nastavení šířky na 800px */
+            margin: 0 auto;    /* Vycentrování */
+        }
+    </style>
+</head>
+<body>
+<div class="custom-container py-5"> <!-- Vlastní šířka -->
+    <h1 class="text-center mb-5">Vytvořit nový hudební nástroj</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.as_p }}
+        </div>
+
+        <!-- Tlačítka vedle sebe -->
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success">Přidat</button>
+            </div>
+            <div class="col-auto">
+                <a href="{% url 'seznam_nastroju' %}" class="btn btn-primary">Zpět na seznam</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

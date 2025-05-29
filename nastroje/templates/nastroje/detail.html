@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail nástroje</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="mb-4 text-center">Detail nástroje: {{ nastroj.nazev }}</h1>
+
+        <div class="card mx-auto" style="max-width: 600px;">
+            {% if nastroj.obrazek %}
+                <img src="{{ nastroj.obrazek.url }}" class="card-img-top" alt="Obrázek nástroje">
+            {% endif %}
+
+            <div class="card-body">
+                <p class="card-text"><strong>Typ:</strong> {{ nastroj.get_typ_display }}</p>
+                <p class="card-text"><strong>Výrobce:</strong> {{ nastroj.vyrobce }}</p>
+                <p class="card-text"><strong>Barva:</strong> {{ nastroj.barva }}</p>
+                <p class="card-text"><strong>Cena:</strong> {{ nastroj.cena }} Kč</p>
+                <p class="card-text"><strong>Materiál:</strong> {{ nastroj.material }}</p>
+                <p class="card-text"><strong>Popis:</strong> {{ nastroj.popis }}</p>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'seznam_nastroju' %}" class="btn btn-secondary">Zpět na seznam nástrojů</a>
+        </div>
+    </div>
+
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potvrzení smazání nástroje</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+</head>
+<body>
+<div class="container py-5">
+    <h1 class="text-center mb-5">Potvrzení smazání nástroje</h1>
+    
+    <div class="alert alert-warning text-center">
+        Opravdu chcete smazat nástroj "{{ nastroj.nazev }}"?
+    </div>
+    
+    <div class="text-center">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Ano, smazat</button>
+            <a href="{% url 'seznam_nastroju' %}" class="btn btn-secondary">Zrušit</a>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

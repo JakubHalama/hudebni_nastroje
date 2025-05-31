@@ -1,48 +1,229 @@
+{% extends 'nastroje/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vytvoření hudebního nástroje</title>
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-    <style>
-        /* Přidání efektu zvětšení při hover na tlačítka */
-        .btn:hover {
-            transform: scale(1.1);
-            transition: transform 0.3s ease-in-out;
-        }
+{% block title %}{% if form.instance.pk %}Upravit{% else %}Přidat{% endif %} nástroj{% endblock %}
 
-        /* Nastavení vlastní šířky pro celou stránku */
-        .custom-container {
-            max-width: 800px;  /* Nastavení šířky na 800px */
-            margin: 0 auto;    /* Vycentrování */
-        }
-    </style>
-</head>
-<body>
-<div class="custom-container py-5"> <!-- Vlastní šířka -->
-    <h1 class="text-center mb-5">Vytvořit nový hudební nástroj</h1>
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8 text-text-secondary" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-2">
+            <li class="inline-flex items-center">
+                <a href="{% url 'seznam_nastroju' %}" class="hover:text-text-accent transition-colors duration-200">
+                    <i class="fas fa-home mr-2"></i>Katalog
+                </a>
+            </li>
+            <li>
+                <i class="fas fa-chevron-right mx-2 text-text-secondary"></i>
+            </li>
+            <li class="text-text-accent">
+                {% if form.instance.pk %}Upravit nástroj{% else %}Přidat nástroj{% endif %}
+            </li>
+        </ol>
+    </nav>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-3">
-            {{ form.as_p }}
+    <div class="glass-card p-8">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 mb-4 animate-float">
+                {% if form.instance.pk %}
+                    <i class="fas fa-edit text-2xl text-white"></i>
+                {% else %}
+                    <i class="fas fa-plus-circle text-2xl text-white"></i>
+                {% endif %}
+            </div>
+            <h1 class="text-3xl font-bold text-text-primary mb-4">
+                {% if form.instance.pk %}
+                    Upravit nástroj
+                {% else %}
+                    Přidat nový nástroj
+                {% endif %}
+            </h1>
+            <p class="text-text-secondary">
+                {% if form.instance.pk %}
+                    Upravte informace o nástroji podle potřeby
+                {% else %}
+                    Vyplňte informace o novém nástroji
+                {% endif %}
+            </p>
         </div>
 
-        <!-- Tlačítka vedle sebe -->
-        <div class="row justify-content-center">
-            <div class="col-auto">
-                <button type="submit" class="btn btn-success">Přidat</button>
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="glass-card p-4 space-y-2 hover:border-text-accent transition-colors duration-300">
+                <label for="{{ field.id_for_label }}" class="flex items-center text-sm font-medium text-text-secondary mb-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mr-3">
+                        {% if field.name == 'nazev' %}
+                            <i class="fas fa-music text-white"></i>
+                        {% elif field.name == 'typ' %}
+                            <i class="fas fa-tag text-white"></i>
+                        {% elif field.name == 'vyrobce' %}
+                            <i class="fas fa-industry text-white"></i>
+                        {% elif field.name == 'cena' %}
+                            <i class="fas fa-dollar-sign text-white"></i>
+                        {% elif field.name == 'barva' %}
+                            <i class="fas fa-palette text-white"></i>
+                        {% elif field.name == 'material' %}
+                            <i class="fas fa-cube text-white"></i>
+                        {% elif field.name == 'popis' %}
+                            <i class="fas fa-align-left text-white"></i>
+                        {% elif field.name == 'obrazek' %}
+                            <i class="fas fa-image text-white"></i>
+                        {% endif %}
+                    </div>
+                    {{ field.label }}
+                </label>
+                {% if field.name == 'vyrobce' %}
+                <div class="flex space-x-2">
+                    <div class="flex-grow">
+                        {{ field }}
+                    </div>
+                    <button type="button" 
+                            onclick="openVyrobcePopup()"
+                            class="px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center justify-center">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                {% else %}
+                {{ field }}
+                {% endif %}
+                {% if field.help_text %}
+                    <p class="text-sm text-text-secondary">{{ field.help_text }}</p>
+                {% endif %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <p class="text-sm text-red-500">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
             </div>
-            <div class="col-auto">
-                <a href="{% url 'seznam_nastroju' %}" class="btn btn-primary">Zpět na seznam</a>
+            {% endfor %}
+
+            <div class="flex space-x-4 mt-8 pt-6 border-t border-border-color">
+                <button type="submit" 
+                        class="flex-1 px-6 py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
+                    <i class="fas fa-save mr-2"></i>
+                    {% if form.instance.pk %}Uložit změny{% else %}Přidat nástroj{% endif %}
+                </button>
+                <a href="{% url 'seznam_nastroju' %}" 
+                   class="flex-1 px-6 py-3.5 bg-gradient-to-r from-dark-accent to-dark-secondary text-white rounded-lg hover:from-dark-secondary hover:to-dark-accent transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Zrušit
+                </a>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
-<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-</body>
-</html>
+<script>
+function openVyrobcePopup() {
+    const width = 600;
+    const height = 800;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    
+    window.open(
+        "{% url 'vytvorit_vyrobce' %}", 
+        "VyrobcePopup",
+        `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+    );
+}
+</script>
+
+<style>
+    /* Custom styling for form fields */
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+        @apply w-full px-6 py-4 text-text-primary rounded-xl
+               bg-dark-accent/30 border border-border-color
+               focus:border-text-accent focus:ring-1 focus:ring-text-accent focus:ring-opacity-20
+               transition-all duration-300;
+        background-color: rgba(44, 45, 49, 0.3);
+        color: #ffffff;
+    }
+    
+    input[type="file"] {
+        @apply w-full px-6 py-4 text-text-primary rounded-xl
+               bg-dark-accent/30 border border-border-color
+               transition-all duration-300;
+        background-color: rgba(44, 45, 49, 0.3);
+        color: #ffffff;
+    }
+
+    /* Custom file input button */
+    input[type="file"]::-webkit-file-upload-button {
+        @apply mr-4 py-3 px-6 rounded-lg border-0 cursor-pointer
+               bg-dark-accent text-text-primary
+               hover:bg-dark-secondary hover:text-text-accent
+               transition-all duration-300;
+        background-color: rgba(44, 45, 49, 0.8);
+    }
+
+    input[type="file"]::file-selector-button {
+        @apply mr-4 py-3 px-6 rounded-lg border-0 cursor-pointer
+               bg-dark-accent text-text-primary
+               hover:bg-dark-secondary hover:text-text-accent
+               transition-all duration-300;
+        background-color: rgba(44, 45, 49, 0.8);
+    }
+
+    /* Placeholder styling */
+    ::placeholder {
+        @apply text-text-secondary opacity-50;
+    }
+
+    /* Focus styling */
+    input:focus,
+    select:focus,
+    textarea:focus {
+        @apply outline-none;
+        background-color: rgba(44, 45, 49, 0.4) !important;
+    }
+
+    /* Hover effects */
+    input:hover,
+    select:hover,
+    textarea:hover {
+        @apply border-text-accent;
+        background-color: rgba(44, 45, 49, 0.4) !important;
+    }
+
+    /* Select options styling */
+    select option {
+        background-color: #2c2d31;
+        color: #ffffff;
+    }
+
+    /* Textarea specific styling */
+    textarea {
+        min-height: 150px;
+    }
+
+    /* Glass card styling */
+    .glass-card {
+        @apply bg-dark-secondary/30 backdrop-blur-sm;
+    }
+
+    /* Form field container styling */
+    .glass-card.p-4 {
+        @apply p-6;
+    }
+
+    /* Label styling */
+    label {
+        @apply mb-3;
+    }
+
+    /* Override any browser default colors */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        -webkit-text-fill-color: #ffffff !important;
+        -webkit-box-shadow: 0 0 0 30px rgb(44, 45, 49) inset !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+</style>
+{% endblock %}

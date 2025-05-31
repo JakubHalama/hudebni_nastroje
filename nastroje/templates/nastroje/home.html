@@ -1,0 +1,136 @@
+{% extends 'nastroje/base.html' %}
+{% load static %}
+
+{% block title %}Hudební nástroje{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <div class="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-purple-900/90"></div>
+        <div class="absolute inset-0 bg-[url('/static/img/hero-bg.jpg')] bg-cover bg-center mix-blend-overlay"></div>
+        <div class="relative text-center px-4 w-full">
+            <h1 class="text-7xl font-bold text-white mb-6 animate-float">
+                Katalog hudebních nástrojů
+            </h1>
+            <p class="text-2xl text-gray-200 mb-12 max-w-3xl mx-auto">
+                Objevte kvalitní hudební nástroje pro každého muzikanta. Od začátečníků po profesionály.
+            </p>
+            <div class="flex justify-center">
+                <a href="{% url 'seznam_nastroju' %}" 
+                   class="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
+                    Prozkoumat katalog
+                </a>
+            </div>
+        </div>
+        <!-- Scroll Down Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#featured" class="text-white/80 hover:text-white transition-colors duration-300">
+                <i class="fas fa-chevron-down text-3xl"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Featured Categories -->
+    <div id="featured" class="py-24 bg-dark-secondary">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center text-text-primary mb-16">Kategorie nástrojů</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {% for typ_kod, typ_nazev in typy_nastroju %}
+                    <a href="{% url 'seznam_nastroju' %}?typ={{ typ_kod }}" 
+                       class="group glass-card p-8 rounded-2xl text-center transition-all duration-300 hover:-translate-y-2">
+                        <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas {% if typ_kod == 'strunne' %}fa-guitar
+                                        {% elif typ_kod == 'dechove' %}fa-wind
+                                        {% elif typ_kod == 'klavesove' %}fa-music
+                                        {% elif typ_kod == 'bici' %}fa-drum
+                                        {% else %}fa-music{% endif %} text-3xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-text-primary mb-3">{{ typ_nazev }}</h3>
+                        <p class="text-text-secondary">Prozkoumat nástroje</p>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recently Added Instruments -->
+    <div class="py-24 bg-dark-bg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-text-primary mb-6">Poslední přidané nástroje</h2>
+                <p class="text-text-secondary text-xl max-w-3xl mx-auto">
+                    Prohlédněte si naše nejnovější nástroje v katalogu
+                </p>
+            </div>
+            
+            {% if nove_nastroje %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {% for nastroj in nove_nastroje %}
+                        <div class="glass-card overflow-hidden group card-hover h-full flex flex-col">
+                            <!-- Image Container with Fixed Aspect Ratio -->
+                            <div class="relative pt-[100%] overflow-hidden bg-dark-accent/50">
+                                {% if nastroj.obrazek %}
+                                    <img src="{{ nastroj.obrazek.url }}" 
+                                         alt="{{ nastroj.nazev }}" 
+                                         class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
+                                {% else %}
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <i class="fas fa-music text-6xl text-text-secondary opacity-30"></i>
+                                    </div>
+                                {% endif %}
+                                <!-- Price Badge -->
+                                {% if nastroj.cena %}
+                                    <div class="absolute top-4 right-4 bg-text-accent/90 text-white px-4 py-2 rounded-full font-semibold backdrop-blur-sm">
+                                        {{ nastroj.cena }} Kč
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-xl font-semibold text-text-primary group-hover:text-text-accent transition-colors duration-300">
+                                    {{ nastroj.nazev }}
+                                </h3>
+                                <div class="flex items-center text-text-secondary space-x-2 mt-2">
+                                    <i class="fas fa-tag text-text-accent"></i>
+                                    <span>{{ nastroj.get_typ_display }}</span>
+                                </div>
+                                <div class="mt-auto pt-6">
+                                    <a href="{% url 'detail_nastroje' nastroj.id %}" 
+                                       class="w-full text-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
+                                        <i class="fas fa-info-circle mr-2"></i>Zobrazit detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="glass-card p-12 text-center">
+                    <div class="animate-float mb-6">
+                        <i class="fas fa-box-open text-6xl text-text-accent opacity-50"></i>
+                    </div>
+                    <h3 class="text-2xl font-medium text-text-primary mb-4">Zatím žádné nástroje</h3>
+                    <p class="text-text-secondary text-lg mb-8">V katalogu zatím nejsou žádné nástroje.</p>
+                    <a href="{% url 'vytvor_nastroj' %}" 
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg">
+                        <i class="fas fa-plus mr-2"></i>
+                        Přidat první nástroj
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="py-24 bg-dark-secondary relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 blur-3xl"></div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative">
+            <h2 class="text-4xl font-bold text-text-primary mb-6">Připraveni začít?</h2>
+
+            <a href="{% url 'seznam_nastroju' %}" 
+               class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
+                <i class="fas fa-music mr-2"></i>
+                Přejít do katalogu
+            </a>
+        </div>
+    </div>
+{% endblock %} 

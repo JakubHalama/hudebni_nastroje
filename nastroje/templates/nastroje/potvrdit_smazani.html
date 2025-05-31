@@ -1,29 +1,86 @@
+{% extends 'nastroje/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Potvrzení smazání nástroje</title>
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-</head>
-<body>
-<div class="container py-5">
-    <h1 class="text-center mb-5">Potvrzení smazání nástroje</h1>
-    
-    <div class="alert alert-warning text-center">
-        Opravdu chcete smazat nástroj "{{ nastroj.nazev }}"?
-    </div>
-    
-    <div class="text-center">
-        <form method="post">
+
+{% block title %}Smazat nástroj{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8 text-text-secondary" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-2">
+            <li class="inline-flex items-center">
+                <a href="{% url 'seznam_nastroju' %}" class="hover:text-text-accent transition-colors duration-200">
+                    <i class="fas fa-home mr-2"></i>Katalog
+                </a>
+            </li>
+            <li>
+                <i class="fas fa-chevron-right mx-2 text-text-secondary"></i>
+            </li>
+            <li>
+                <a href="{% url 'detail_nastroje' nastroj.id %}" class="hover:text-text-accent transition-colors duration-200">
+                    {{ nastroj.nazev }}
+                </a>
+            </li>
+            <li>
+                <i class="fas fa-chevron-right mx-2 text-text-secondary"></i>
+            </li>
+            <li class="text-text-accent">Smazat</li>
+        </ol>
+    </nav>
+
+    <div class="glass-card p-8 text-center">
+        <div class="mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-red-500 to-red-600 mb-6 animate-float">
+                <i class="fas fa-exclamation-triangle text-2xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-text-primary mb-4">Smazat nástroj</h1>
+            <p class="text-text-secondary text-lg">
+                Opravdu chcete smazat nástroj <span class="text-text-primary font-semibold">{{ nastroj.nazev }}</span>?
+            </p>
+        </div>
+
+        <!-- Instrument Preview -->
+        <div class="glass-card bg-dark-accent/20 p-6 mb-8 max-w-lg mx-auto">
+            <div class="flex items-center space-x-6">
+                {% if nastroj.obrazek %}
+                    <img src="{{ nastroj.obrazek.url }}" 
+                         alt="{{ nastroj.nazev }}" 
+                         class="w-24 h-24 object-contain bg-dark-accent/30 rounded-lg p-2">
+                {% else %}
+                    <div class="w-24 h-24 flex items-center justify-center bg-dark-accent/30 rounded-lg">
+                        <i class="fas fa-music text-4xl text-text-secondary opacity-30"></i>
+                    </div>
+                {% endif %}
+                <div class="flex-1 text-left">
+                    <h3 class="text-xl font-semibold text-text-primary mb-2">{{ nastroj.nazev }}</h3>
+                    <p class="text-text-secondary flex items-center">
+                        <i class="fas fa-tag mr-2"></i>
+                        {{ nastroj.get_typ_display }}
+                    </p>
+                    {% if nastroj.cena %}
+                        <p class="text-text-accent font-semibold mt-2">
+                            {{ nastroj.cena }} Kč
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <form method="post" class="flex flex-col items-center">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Ano, smazat</button>
-            <a href="{% url 'seznam_nastroju' %}" class="btn btn-secondary">Zrušit</a>
+            <div class="flex space-x-4">
+                <button type="submit" 
+                        class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center">
+                    <i class="fas fa-trash-alt mr-2"></i>
+                    Smazat nástroj
+                </button>
+                <a href="{% url 'detail_nastroje' nastroj.id %}" 
+                   class="px-6 py-3 bg-gradient-to-r from-dark-accent to-dark-secondary text-white rounded-lg hover:from-dark-secondary hover:to-dark-accent transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Zrušit
+                </a>
+            </div>
         </form>
     </div>
 </div>
-
-<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-</body>
-</html>
+{% endblock %}

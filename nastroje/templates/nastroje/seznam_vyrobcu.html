@@ -1,0 +1,81 @@
+{% extends 'nastroje/base.html' %}
+{% load static %}
+
+{% block title %}Seznam výrobců{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-text-primary">Seznam výrobců</h1>
+        <a href="{% url 'vytvorit_vyrobce' %}" 
+           class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300">
+            <i class="fas fa-plus mr-2"></i>
+            Přidat výrobce
+        </a>
+    </div>
+
+    <!-- Grid of Manufacturers -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for vyrobce in vyrobci %}
+        <div class="glass-card hover:border-text-accent transition-all duration-300">
+            <div class="p-6">
+                <div class="flex items-center space-x-4">
+                    {% if vyrobce.logo %}
+                        <div class="w-16 h-16 bg-dark-accent/30 rounded-lg overflow-hidden">
+                            <img src="{{ vyrobce.logo.url }}" 
+                                 alt="{{ vyrobce.nazev }}" 
+                                 class="w-full h-full object-contain p-2">
+                        </div>
+                    {% else %}
+                        <div class="w-16 h-16 bg-dark-accent/30 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-industry text-3xl text-text-secondary opacity-30"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="flex-1">
+                        <h2 class="text-xl font-semibold text-text-primary mb-1">{{ vyrobce.nazev }}</h2>
+                        {% if vyrobce.zeme %}
+                            <p class="text-text-secondary flex items-center">
+                                <i class="fas fa-globe mr-2"></i>
+                                {{ vyrobce.zeme }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="text-text-secondary text-sm flex items-center">
+                        <i class="fas fa-music mr-2"></i>
+                        Počet nástrojů: {{ vyrobce.nastroje.count }}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 flex space-x-2">
+                    <a href="{% url 'detail_vyrobce' vyrobce.id %}" 
+                       class="flex-1 text-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300">
+                        <i class="fas fa-eye mr-2"></i>
+                        Detail
+                    </a>
+                    <a href="{% url 'smazat_vyrobce' vyrobce.id %}" 
+                       class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-300">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <div class="text-text-secondary">
+                <i class="fas fa-industry text-6xl mb-4 opacity-30"></i>
+                <p class="text-xl">Zatím nejsou přidáni žádní výrobci.</p>
+                <a href="{% url 'vytvorit_vyrobce' %}" class="text-text-accent hover:text-text-accent/80 transition-colors duration-300">
+                    Přidat prvního výrobce
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

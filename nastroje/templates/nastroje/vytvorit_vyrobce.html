@@ -1,0 +1,80 @@
+{% extends 'nastroje/base.html' %}
+{% load static %}
+
+{% block title %}Přidat výrobce{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8 text-text-secondary" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-2">
+            <li class="inline-flex items-center">
+                <a href="{% url 'seznam_nastroju' %}" class="hover:text-text-accent transition-colors duration-200">
+                    <i class="fas fa-home mr-2"></i>Katalog
+                </a>
+            </li>
+            <li>
+                <i class="fas fa-chevron-right mx-2 text-text-secondary"></i>
+            </li>
+            <li class="text-text-accent">Přidat výrobce</li>
+        </ol>
+    </nav>
+
+    <div class="glass-card p-8">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 mb-4 animate-float">
+                <i class="fas fa-industry text-2xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-text-primary mb-4">Přidat nového výrobce</h1>
+            <p class="text-text-secondary">Vyplňte informace o novém výrobci hudebních nástrojů</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="glass-card p-4 space-y-2 hover:border-text-accent transition-colors duration-300">
+                <label for="{{ field.id_for_label }}" class="flex items-center text-sm font-medium text-text-secondary mb-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mr-3">
+                        {% if field.name == 'nazev' %}
+                            <i class="fas fa-signature text-white"></i>
+                        {% elif field.name == 'zeme' %}
+                            <i class="fas fa-globe text-white"></i>
+                        {% elif field.name == 'popis' %}
+                            <i class="fas fa-align-left text-white"></i>
+                        {% elif field.name == 'logo' %}
+                            <i class="fas fa-image text-white"></i>
+                        {% elif field.name == 'web' %}
+                            <i class="fas fa-link text-white"></i>
+                        {% endif %}
+                    </div>
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="text-sm text-text-secondary">{{ field.help_text }}</p>
+                {% endif %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <p class="text-sm text-red-500">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="flex space-x-4 mt-8 pt-6 border-t border-border-color">
+                <button type="submit" 
+                        class="flex-1 px-6 py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
+                    <i class="fas fa-save mr-2"></i>
+                    Přidat výrobce
+                </button>
+                <a href="{% url 'seznam_nastroju' %}" 
+                   class="flex-1 px-6 py-3.5 bg-gradient-to-r from-dark-accent to-dark-secondary text-white rounded-lg hover:from-dark-secondary hover:to-dark-accent transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Zrušit
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

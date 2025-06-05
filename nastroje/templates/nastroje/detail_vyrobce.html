@@ -4,50 +4,47 @@
 {% block title %}{{ vyrobce.nazev }} - Detail výrobce{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="container">
     <!-- Breadcrumb -->
-    <nav class="flex mb-8 text-text-secondary" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-2">
-            <li class="inline-flex items-center">
-                <a href="{% url 'seznam_nastroju' %}" class="hover:text-text-accent transition-colors duration-200">
-                    <i class="fas fa-home mr-2"></i>Katalog
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'seznam_nastroju' %}">
+                    <i class="fas fa-home me-2"></i>Katalog
                 </a>
             </li>
-            <li>
-                <i class="fas fa-chevron-right mx-2 text-text-secondary"></i>
-            </li>
-            <li class="text-text-accent">{{ vyrobce.nazev }}</li>
+            <li class="breadcrumb-item active">{{ vyrobce.nazev }}</li>
         </ol>
     </nav>
 
-    <div class="glass-card overflow-hidden">
-        <div class="md:flex">
+    <div class="card">
+        <div class="row g-0">
             <!-- Logo Section -->
-            <div class="md:w-1/3">
-                <div class="relative pt-[100%] group">
+            <div class="col-md-4">
+                <div class="position-relative" style="padding-top: 100%;">
                     {% if vyrobce.logo %}
-                        <div class="absolute inset-0 bg-dark-accent/50 p-4">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 p-4">
                             <img src="{{ vyrobce.logo.url }}" 
                                  alt="{{ vyrobce.nazev }}" 
-                                 class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                                 class="w-100 h-100 object-fit-contain">
                         </div>
                     {% else %}
-                        <div class="absolute inset-0 flex items-center justify-center bg-dark-accent/50">
-                            <i class="fas fa-industry text-6xl text-text-secondary opacity-30 animate-float"></i>
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                            <i class="fas fa-industry fa-3x text-muted opacity-25"></i>
                         </div>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Info Section -->
-            <div class="md:w-2/3 p-8">
-                <div class="space-y-6">
+            <div class="col-md-8">
+                <div class="card-body">
                     <!-- Manufacturer Name -->
-                    <div>
-                        <h1 class="text-4xl font-bold text-text-primary mb-2">{{ vyrobce.nazev }}</h1>
+                    <div class="mb-4">
+                        <h1 class="h2 mb-2">{{ vyrobce.nazev }}</h1>
                         {% if vyrobce.zeme %}
-                            <div class="flex items-center text-text-secondary">
-                                <i class="fas fa-globe mr-2"></i>
+                            <div class="text-muted">
+                                <i class="fas fa-globe me-2"></i>
                                 {{ vyrobce.zeme }}
                             </div>
                         {% endif %}
@@ -57,47 +54,55 @@
                     {% if vyrobce.web %}
                         <a href="{{ vyrobce.web }}" 
                            target="_blank"
-                           class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300">
-                            <i class="fas fa-external-link-alt mr-2"></i>
+                           class="btn btn-primary mb-4">
+                            <i class="fas fa-external-link-alt me-2"></i>
                             Webové stránky
                         </a>
                     {% endif %}
 
                     <!-- Description -->
                     {% if vyrobce.popis %}
-                        <div class="glass-card p-6">
-                            <h2 class="text-xl font-semibold text-text-primary mb-4">O výrobci</h2>
-                            <p class="text-text-secondary">{{ vyrobce.popis|linebreaks }}</p>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h2 class="h5 mb-3">O výrobci</h2>
+                                <p class="text-muted mb-0">{{ vyrobce.popis|linebreaks }}</p>
+                            </div>
                         </div>
                     {% endif %}
 
                     <!-- Instruments by this manufacturer -->
-                    <div class="glass-card p-6">
-                        <h2 class="text-xl font-semibold text-text-primary mb-4">Nástroje od tohoto výrobce</h2>
-                        {% if vyrobce.nastroje.all %}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {% for nastroj in vyrobce.nastroje.all %}
-                                    <a href="{% url 'detail_nastroje' nastroj.id %}" 
-                                       class="glass-card p-4 hover:border-text-accent transition-colors duration-300 flex items-center space-x-4">
-                                        {% if nastroj.obrazek %}
-                                            <img src="{{ nastroj.obrazek.url }}" 
-                                                 alt="{{ nastroj.nazev }}" 
-                                                 class="w-16 h-16 object-contain bg-dark-accent/30 rounded p-2">
-                                        {% else %}
-                                            <div class="w-16 h-16 flex items-center justify-center bg-dark-accent/30 rounded">
-                                                <i class="fas fa-music text-2xl text-text-secondary opacity-30"></i>
-                                            </div>
-                                        {% endif %}
-                                        <div>
-                                            <h3 class="text-text-primary font-medium">{{ nastroj.nazev }}</h3>
-                                            <p class="text-text-secondary text-sm">{{ nastroj.get_typ_display }}</p>
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="h5 mb-3">Nástroje od tohoto výrobce</h2>
+                            {% if vyrobce.nastroje.all %}
+                                <div class="row row-cols-1 row-cols-md-2 g-4">
+                                    {% for nastroj in vyrobce.nastroje.all %}
+                                        <div class="col">
+                                            <a href="{% url 'detail_nastroje' nastroj.id %}" 
+                                               class="card h-100 text-decoration-none text-dark">
+                                                <div class="card-body d-flex align-items-center">
+                                                    {% if nastroj.obrazek %}
+                                                        <img src="{{ nastroj.obrazek.url }}" 
+                                                             alt="{{ nastroj.nazev }}" 
+                                                             class="me-3" style="width: 64px; height: 64px; object-fit: contain;">
+                                                    {% else %}
+                                                        <div class="me-3 bg-light rounded d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                                                            <i class="fas fa-music text-muted opacity-25"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    <div>
+                                                        <h3 class="h6 mb-1">{{ nastroj.nazev }}</h3>
+                                                        <p class="text-muted small mb-0">{{ nastroj.get_typ_display }}</p>
+                                                    </div>
+                                                </div>
+                                            </a>
                                         </div>
-                                    </a>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <p class="text-text-secondary">Zatím nejsou k dispozici žádné nástroje od tohoto výrobce.</p>
-                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted mb-0">Zatím nejsou k dispozici žádné nástroje od tohoto výrobce.</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -105,10 +110,10 @@
     </div>
 
     <!-- Back Button -->
-    <div class="mt-8">
+    <div class="mt-4">
         <a href="javascript:history.back()" 
-           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-dark-accent to-dark-secondary text-white rounded-lg hover:from-dark-secondary hover:to-dark-accent transition-all duration-300 group">
-            <i class="fas fa-arrow-left mr-2 transform group-hover:-translate-x-2 transition-transform duration-300"></i>
+           class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>
             Zpět
         </a>
     </div>

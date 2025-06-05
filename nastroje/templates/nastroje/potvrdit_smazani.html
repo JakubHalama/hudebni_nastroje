@@ -4,83 +4,81 @@
 {% block title %}Smazat nástroj{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto">
+<div class="container">
     <!-- Breadcrumb -->
-    <nav class="flex mb-8 text-text-secondary" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-2">
-            <li class="inline-flex items-center">
-                <a href="{% url 'seznam_nastroju' %}" class="hover:text-text-accent transition-colors duration-200">
-                    <i class="fas fa-home mr-2"></i>Katalog
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'seznam_nastroju' %}">
+                    <i class="fas fa-home me-2"></i>Katalog
                 </a>
             </li>
-            <li>
-                <i class="fas fa-chevron-right mx-2 text-text-secondary"></i>
-            </li>
-            <li>
-                <a href="{% url 'detail_nastroje' nastroj.id %}" class="hover:text-text-accent transition-colors duration-200">
+            <li class="breadcrumb-item">
+                <a href="{% url 'detail_nastroje' nastroj.id %}">
                     {{ nastroj.nazev }}
                 </a>
             </li>
-            <li>
-                <i class="fas fa-chevron-right mx-2 text-text-secondary"></i>
-            </li>
-            <li class="text-text-accent">Smazat</li>
+            <li class="breadcrumb-item active">Smazat</li>
         </ol>
     </nav>
 
-    <div class="glass-card p-8 text-center">
-        <div class="mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-red-500 to-red-600 mb-6 animate-float">
-                <i class="fas fa-exclamation-triangle text-2xl text-white"></i>
-            </div>
-            <h1 class="text-3xl font-bold text-text-primary mb-4">Smazat nástroj</h1>
-            <p class="text-text-secondary text-lg">
-                Opravdu chcete smazat nástroj <span class="text-text-primary font-semibold">{{ nastroj.nazev }}</span>?
-            </p>
-        </div>
-
-        <!-- Instrument Preview -->
-        <div class="glass-card bg-dark-accent/20 p-6 mb-8 max-w-lg mx-auto">
-            <div class="flex items-center space-x-6">
-                {% if nastroj.obrazek %}
-                    <img src="{{ nastroj.obrazek.url }}" 
-                         alt="{{ nastroj.nazev }}" 
-                         class="w-24 h-24 object-contain bg-dark-accent/30 rounded-lg p-2">
-                {% else %}
-                    <div class="w-24 h-24 flex items-center justify-center bg-dark-accent/30 rounded-lg">
-                        <i class="fas fa-music text-4xl text-text-secondary opacity-30"></i>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 rounded-circle mb-4" style="width: 64px; height: 64px;">
+                        <i class="fas fa-exclamation-triangle text-danger fa-2x"></i>
                     </div>
-                {% endif %}
-                <div class="flex-1 text-left">
-                    <h3 class="text-xl font-semibold text-text-primary mb-2">{{ nastroj.nazev }}</h3>
-                    <p class="text-text-secondary flex items-center">
-                        <i class="fas fa-tag mr-2"></i>
-                        {{ nastroj.get_typ_display }}
+                    <h1 class="h3 mb-3">Smazat nástroj</h1>
+                    <p class="text-muted mb-4">
+                        Opravdu chcete smazat nástroj <strong>{{ nastroj.nazev }}</strong>?
                     </p>
-                    {% if nastroj.cena %}
-                        <p class="text-text-accent font-semibold mt-2">
-                            {{ nastroj.cena }} Kč
-                        </p>
-                    {% endif %}
+
+                    <!-- Instrument Preview -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                {% if nastroj.obrazek %}
+                                    <img src="{{ nastroj.obrazek.url }}" 
+                                         alt="{{ nastroj.nazev }}" 
+                                         class="me-4" style="width: 96px; height: 96px; object-fit: contain;">
+                                {% else %}
+                                    <div class="d-flex align-items-center justify-content-center bg-secondary bg-opacity-10 rounded me-4" style="width: 96px; height: 96px;">
+                                        <i class="fas fa-music fa-2x text-muted opacity-50"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="text-start">
+                                    <h3 class="h5 mb-2">{{ nastroj.nazev }}</h3>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-tag me-2"></i>
+                                        {{ nastroj.get_typ_display }}
+                                    </p>
+                                    {% if nastroj.cena %}
+                                        <p class="text-primary mb-0 fw-bold">
+                                            {{ nastroj.cena }} Kč
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-2"></i>
+                                Smazat nástroj
+                            </button>
+                            <a href="{% url 'detail_nastroje' nastroj.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>
+                                Zrušit
+                            </a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-
-        <form method="post" class="flex flex-col items-center">
-            {% csrf_token %}
-            <div class="flex space-x-4">
-                <button type="submit" 
-                        class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center">
-                    <i class="fas fa-trash-alt mr-2"></i>
-                    Smazat nástroj
-                </button>
-                <a href="{% url 'detail_nastroje' nastroj.id %}" 
-                   class="px-6 py-3 bg-gradient-to-r from-dark-accent to-dark-secondary text-white rounded-lg hover:from-dark-secondary hover:to-dark-accent transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center">
-                    <i class="fas fa-times mr-2"></i>
-                    Zrušit
-                </a>
-            </div>
-        </form>
     </div>
 </div>
 {% endblock %}

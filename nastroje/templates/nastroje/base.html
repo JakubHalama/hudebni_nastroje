@@ -1,196 +1,105 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="cs" class="dark">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Hudební nástroje{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        'dark-bg': '#1a1b1e',
-                        'dark-secondary': '#2c2d31',
-                        'dark-accent': '#3a3b3f',
-                        'text-primary': '#ffffff',
-                        'text-secondary': '#9ca3af',
-                        'text-accent': '#60a5fa',
-                        'border-color': '#374151'
-                    },
-                    boxShadow: {
-                        'inner-light': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.05)',
-                        'custom': '0 0 20px rgba(96, 165, 250, 0.1)',
-                    },
-                    animation: {
-                        'gradient': 'gradient 8s linear infinite',
-                        'float': 'float 3s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        gradient: {
-                            '0%, 100%': {
-                                'background-size': '200% 200%',
-                                'background-position': 'left center'
-                            },
-                            '50%': {
-                                'background-size': '200% 200%',
-                                'background-position': 'right center'
-                            }
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .glass-effect {
-                @apply backdrop-blur-lg bg-opacity-80;
-            }
-            .animated-gradient {
-                @apply bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 animate-gradient bg-[length:200%_auto];
-            }
-            .card-hover {
-                @apply transition-all duration-300 hover:shadow-custom hover:-translate-y-1;
-            }
-            .nav-link {
-                @apply relative px-4 py-2 text-text-secondary hover:text-text-accent transition-colors duration-300;
-            }
-            .nav-link::after {
-                @apply content-[''] absolute bottom-0 left-0 w-0 h-0.5 bg-text-accent transition-all duration-300;
-            }
-            .nav-link:hover::after {
-                @apply w-full;
-            }
-        }
+    <style>
         body {
-            @apply bg-gradient-to-b from-dark-bg to-dark-secondary min-h-screen text-text-primary;
+            padding-top: 60px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .glass-card {
-            @apply bg-dark-secondary bg-opacity-50 backdrop-blur-lg border border-border-color rounded-xl;
+        .footer {
+            margin-top: auto;
+            background-color: #f8f9fa;
+            padding: 20px 0;
         }
     </style>
 </head>
-<body class="flex flex-col">
+<body>
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 glass-effect border-b border-border-color">
-        <div class="max-w-full px-6 py-4">
-            <div class="flex items-center justify-between">
-                <!-- Logo and Type Navigation -->
-                <div class="flex items-center space-x-8">
-                    <a href="{% url 'home' %}" 
-                       class="text-2xl font-bold text-text-primary hover:text-text-accent transition-colors duration-300 flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center animate-float">
-                            <i class="fas fa-music text-white"></i>
-                        </div>
-                        <span>Hudební nástroje</span>
-                    </a>
-
-                    <!-- Type Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-music me-2"></i>
+                Hudební nástroje
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
                     {% if request.resolver_match.url_name == 'seznam_nastroju' or request.resolver_match.url_name == 'home' or request.resolver_match.url_name == 'seznam_vyrobcu' %}
-                    <div class="flex items-center gap-2">
-                        <a href="{% url 'seznam_nastroju' %}{% if search_query %}?q={{ search_query }}{% endif %}" 
-                           class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2
-                                 {% if request.resolver_match.url_name == 'seznam_nastroju' and not selected_type %}
-                                     bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700
-                                 {% else %}
-                                     bg-dark-accent/50 text-text-secondary hover:text-text-primary
-                                 {% endif %}">
-                            <i class="fas fa-border-all"></i>
-                            <span>Vše</span>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'seznam_nastroju' and not selected_type %}active{% endif %}" 
+                           href="{% url 'seznam_nastroju' %}{% if search_query %}?q={{ search_query }}{% endif %}">
+                            <i class="fas fa-border-all me-1"></i> Vše
                         </a>
-                        {% for typ_kod, typ_nazev in typy_nastroju %}
-                            <a href="{% url 'seznam_nastroju' %}?typ={{ typ_kod }}{% if search_query %}&q={{ search_query }}{% endif %}" 
-                               class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2
-                                     {% if selected_type == typ_kod %}
-                                         bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700
-                                     {% else %}
-                                         bg-dark-accent/50 text-text-secondary hover:text-text-primary
-                                     {% endif %}">
-                                <i class="fas {% if typ_kod == 'strunne' %}fa-guitar
-                                            {% elif typ_kod == 'dechove' %}fa-wind
-                                            {% elif typ_kod == 'klavesove' %}fa-music
-                                            {% elif typ_kod == 'bici' %}fa-drum
-                                            {% else %}fa-music{% endif %}">
-                                </i>
-                                <span>{{ typ_nazev }}</span>
-                            </a>
-                        {% endfor %}
-                        <a href="{% url 'seznam_vyrobcu' %}" 
-                           class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2
-                                 {% if request.resolver_match.url_name == 'seznam_vyrobcu' %}
-                                     bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700
-                                 {% else %}
-                                     bg-dark-accent/50 text-text-secondary hover:text-text-primary
-                                 {% endif %}">
-                            <i class="fas fa-industry"></i>
-                            <span>Výrobci</span>
+                    </li>
+                    {% for typ_kod, typ_nazev in typy_nastroju %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if selected_type == typ_kod %}active{% endif %}" 
+                           href="{% url 'seznam_nastroju' %}?typ={{ typ_kod }}{% if search_query %}&q={{ search_query }}{% endif %}">
+                            <i class="fas {% if typ_kod == 'strunne' %}fa-guitar
+                                        {% elif typ_kod == 'dechove' %}fa-wind
+                                        {% elif typ_kod == 'klavesove' %}fa-music
+                                        {% elif typ_kod == 'bici' %}fa-drum
+                                        {% else %}fa-music{% endif %} me-1">
+                            </i>
+                            {{ typ_nazev }}
                         </a>
-                    </div>
+                    </li>
+                    {% endfor %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'seznam_vyrobcu' %}active{% endif %}" 
+                           href="{% url 'seznam_vyrobcu' %}">
+                            <i class="fas fa-industry me-1"></i> Výrobci
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div class="d-flex">
+                    {% if request.resolver_match.url_name == 'seznam_nastroju' or request.resolver_match.url_name == 'home' %}
+                    <a href="{% url 'vytvor_nastroj' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Přidat nový nástroj
+                    </a>
                     {% endif %}
                 </div>
-
-                <!-- Add Instrument Button -->
-                {% if request.resolver_match.url_name == 'seznam_nastroju' or request.resolver_match.url_name == 'home' %}
-                <a href="{% url 'vytvor_nastroj' %}" 
-                   class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg">
-                    <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
-                    Přidat nový nástroj
-                </a>
-                {% endif %}
-
-                <!-- Add Manufacturer Button -->
-                {% if request.resolver_match.url_name == 'seznam_vyrobcu' %}
-                <a href="{% url 'vytvorit_vyrobce' %}" 
-                   class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg">
-                    <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
-                    Přidat výrobce
-                </a>
-                {% endif %}
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow w-full">
+    <main class="container py-4">
         {% block content %}
         {% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark-secondary border-t border-border-color mt-auto">
-        <div class="container mx-auto px-6 py-12">
-            <div class="text-center space-y-4">
-                <div class="flex items-center justify-center space-x-3 mb-4">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                        <i class="fas fa-envelope text-white text-sm"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-text-primary">Kontakt</h3>
-                </div>
-                <div class="space-y-2">
-                    <p class="text-text-secondary flex items-center justify-center">
-                        <i class="fas fa-envelope mr-2"></i>it2208@sspu-opava.cz
-                    </p>
-
-                    <p class="text-text-secondary flex items-center justify-center">
-                        <i class="fas fa-map-marker-alt mr-2"></i>Opava, Česká republika
-                    </p>
-                </div>
+    <footer class="footer text-center">
+        <div class="container">
+            <div class="mb-4">
+                <h5><i class="fas fa-envelope me-2"></i>Kontakt</h5>
+                <p class="mb-1">
+                    <i class="fas fa-envelope me-2"></i>it2208@sspu-opava.cz
+                </p>
+                <p>
+                    <i class="fas fa-map-marker-alt me-2"></i>Opava, Česká republika
+                </p>
             </div>
-            <div class="text-center mt-12 pt-8 border-t border-border-color">
-                <p class="text-text-secondary">&copy; 2025 Hudební nástroje - Jakub Halama.</p>
-            </div>
+            <hr>
+            <p class="text-muted">&copy; 2025 Hudební nástroje - Jakub Halama.</p>
         </div>
     </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

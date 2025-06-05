@@ -4,152 +4,148 @@
 {% block title %}Katalog hudebních nástrojů{% endblock %}
 
 {% block content %}
-    <div class="max-w-7xl mx-auto">
-        <!-- Hero Section -->
-        <div class="text-center mb-16 relative pt-32">
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 blur-3xl -z-10"></div>
-            <h1 class="text-6xl font-bold text-text-primary mb-6 tracking-tight">
-                Katalog hudebních nástrojů
-            </h1>
-            <p class="text-text-secondary text-xl max-w-3xl mx-auto leading-relaxed">
-                Objevte naši pečlivě vybranou kolekci kvalitních hudebních nástrojů od renomovaných výrobců.
-            </p>
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">Katalog hudebních nástrojů</h1>
+        <p class="lead text-muted">
+            Objevte naši pečlivě vybranou kolekci kvalitních hudebních nástrojů od renomovaných výrobců.
+        </p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            <form method="GET" action="{% url 'seznam_nastroju' %}" class="input-group">
+                <input type="text" 
+                       name="q"
+                       value="{{ search_query }}"
+                       placeholder="Hledat nástroje..." 
+                       class="form-control">
+                {% if selected_type %}
+                    <input type="hidden" name="typ" value="{{ selected_type }}">
+                {% endif %}
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+                {% if search_query %}
+                    <a href="{% url 'seznam_nastroju' %}{% if selected_type %}?typ={{ selected_type }}{% endif %}" 
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i>
+                    </a>
+                {% endif %}
+            </form>
         </div>
+    </div>
 
-        <!-- Search Section -->
-        <form method="GET" action="{% url 'seznam_nastroju' %}" class="relative w-full max-w-3xl mx-auto mb-12">
-            <input type="text" 
-                   name="q"
-                   value="{{ search_query }}"
-                   placeholder="Hledat nástroje..." 
-                   class="w-full px-5 py-3 bg-dark-accent/50 text-text-primary rounded-xl border border-border-color focus:border-text-accent focus:ring-1 focus:ring-text-accent transition-all duration-300 pl-12">
-            {% if selected_type %}
-                <input type="hidden" name="typ" value="{{ selected_type }}">
-            {% endif %}
-            <button type="submit" class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-accent transition-colors duration-200">
-                <i class="fas fa-search"></i>
-            </button>
-            {% if search_query %}
-                <a href="{% url 'seznam_nastroju' %}{% if selected_type %}?typ={{ selected_type }}{% endif %}" 
-                   class="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-accent transition-colors duration-200">
-                    <i class="fas fa-times"></i>
-                </a>
-            {% endif %}
-        </form>
-
-        {% if search_query or selected_type %}
-            <div class="mb-8 text-text-secondary">
-                {% with nastroje.count as total_count %}
-                    {% if total_count > 0 %}
-                        <p class="flex items-center">
-                            <i class="fas fa-filter mr-2"></i>
-                            Nalezeno {{ total_count }} výsledků
-                            {% if search_query %}pro "{{ search_query }}"{% endif %}
-                            {% if selected_type %}
+    {% if search_query or selected_type %}
+        <div class="mb-4 text-muted">
+            {% with nastroje.count as total_count %}
+                {% if total_count > 0 %}
+                    <p>
+                        <i class="fas fa-filter me-2"></i>
+                        Nalezeno {{ total_count }} výsledků
+                        {% if search_query %}pro "{{ search_query }}"{% endif %}
+                        {% if selected_type %}
+                            {% for typ_kod, typ_nazev in typy_nastroju %}
+                                {% if typ_kod == selected_type %}
+                                    v kategorii "{{ typ_nazev }}"
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </p>
+                {% else %}
+                    <div class="card text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-search fa-3x text-muted"></i>
+                        </div>
+                        <h3 class="h4 mb-3">Žádné výsledky</h3>
+                        <p class="text-muted mb-4">
+                            {% if search_query and selected_type %}
                                 {% for typ_kod, typ_nazev in typy_nastroju %}
                                     {% if typ_kod == selected_type %}
-                                        v kategorii "{{ typ_nazev }}"
+                                        Pro hledaný výraz "{{ search_query }}" v kategorii "{{ typ_nazev }}" nebyly nalezeny žádné nástroje.
+                                    {% endif %}
+                                {% endfor %}
+                            {% elif search_query %}
+                                Pro hledaný výraz "{{ search_query }}" nebyly nalezeny žádné nástroje.
+                            {% else %}
+                                {% for typ_kod, typ_nazev in typy_nastroju %}
+                                    {% if typ_kod == selected_type %}
+                                        V kategorii "{{ typ_nazev }}" nejsou zatím žádné nástroje.
                                     {% endif %}
                                 {% endfor %}
                             {% endif %}
                         </p>
-                    {% else %}
-                        <div class="glass-card p-8 text-center">
-                            <div class="animate-float mb-6">
-                                <i class="fas fa-search text-6xl text-text-accent opacity-50"></i>
-                            </div>
-                            <h3 class="text-2xl font-medium text-text-primary mb-4">Žádné výsledky</h3>
-                            <p class="text-text-secondary text-lg mb-6">
-                                {% if search_query and selected_type %}
-                                    {% for typ_kod, typ_nazev in typy_nastroju %}
-                                        {% if typ_kod == selected_type %}
-                                            Pro hledaný výraz "{{ search_query }}" v kategorii "{{ typ_nazev }}" nebyly nalezeny žádné nástroje.
-                                        {% endif %}
-                                    {% endfor %}
-                                {% elif search_query %}
-                                    Pro hledaný výraz "{{ search_query }}" nebyly nalezeny žádné nástroje.
-                                {% else %}
-                                    {% for typ_kod, typ_nazev in typy_nastroju %}
-                                        {% if typ_kod == selected_type %}
-                                            V kategorii "{{ typ_nazev }}" nejsou zatím žádné nástroje.
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                            </p>
-                            <a href="{% url 'seznam_nastroju' %}" 
-                               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300">
-                                <i class="fas fa-arrow-left mr-2"></i>
-                                Zobrazit všechny nástroje
-                            </a>
-                        </div>
-                    {% endif %}
-                {% endwith %}
-            </div>
-        {% endif %}
+                        <a href="{% url 'seznam_nastroju' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Zobrazit všechny nástroje
+                        </a>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+    {% endif %}
 
-        {% if nastroje %}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {% for nastroj in nastroje %}
-                    <div class="glass-card overflow-hidden group card-hover h-full flex flex-col">
-                        <!-- Image Container with Fixed Aspect Ratio -->
-                        <div class="relative pt-[100%] overflow-hidden bg-dark-accent/50">
+    {% if nastroje %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for nastroj in nastroje %}
+                <div class="col">
+                    <div class="card h-100">
+                        <!-- Image Container -->
+                        <div class="position-relative" style="padding-top: 100%;">
                             {% if nastroj.obrazek %}
                                 <img src="{{ nastroj.obrazek.url }}" 
                                      alt="{{ nastroj.nazev }}" 
-                                     class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
+                                     class="position-absolute top-0 start-0 w-100 h-100 object-fit-contain p-3">
                             {% else %}
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <i class="fas fa-music text-6xl text-text-secondary opacity-30"></i>
+                                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-music fa-3x text-muted opacity-25"></i>
                                 </div>
                             {% endif %}
                             <!-- Price Badge -->
                             {% if nastroj.cena %}
-                                <div class="absolute top-4 right-4 bg-text-accent/90 text-white px-4 py-2 rounded-full font-semibold backdrop-blur-sm">
-                                    {{ nastroj.cena }} Kč
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <span class="badge bg-primary">{{ nastroj.cena }} Kč</span>
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-semibold text-text-primary group-hover:text-text-accent transition-colors duration-300">
-                                {{ nastroj.nazev }}
-                            </h3>
-                            <div class="flex items-center text-text-secondary space-x-2 mt-2">
-                                <i class="fas fa-tag text-text-accent"></i>
-                                <span>{{ nastroj.get_typ_display }}</span>
-                            </div>
-                            <div class="mt-auto pt-6">
-                                <div class="flex space-x-3">
-                                    <a href="{% url 'detail_nastroje' nastroj.id %}" 
-                                       class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
-                                        <i class="fas fa-info-circle mr-2"></i>Detail
-                                    </a>
-                                    <a href="{% url 'upravit_nastroj' nastroj.id %}" 
-                                       class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-dark-accent to-dark-secondary text-white rounded-lg hover:from-dark-secondary hover:to-dark-accent border border-text-accent hover:border-blue-400 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
-                                        <i class="fas fa-edit mr-2"></i>Upravit
-                                    </a>
-                                    <a href="{% url 'smazat_nastroj' nastroj.id %}" 
-                                       class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
-                                        <i class="fas fa-trash-alt mr-2"></i>Smazat
-                                    </a>
-                                </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ nastroj.nazev }}</h5>
+                            <p class="card-text text-muted">
+                                <i class="fas fa-tag me-2"></i>
+                                {{ nastroj.get_typ_display }}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100">
+                                <a href="{% url 'detail_nastroje' nastroj.id %}" class="btn btn-primary">
+                                    <i class="fas fa-info-circle me-1"></i>Detail
+                                </a>
+                                <a href="{% url 'upravit_nastroj' nastroj.id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit me-1"></i>Upravit
+                                </a>
+                                <a href="{% url 'smazat_nastroj' nastroj.id %}" class="btn btn-danger">
+                                    <i class="fas fa-trash-alt me-1"></i>Smazat
+                                </a>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="glass-card p-16 text-center">
-                <div class="animate-float mb-8">
-                    <i class="fas fa-music text-6xl text-text-accent opacity-50"></i>
                 </div>
-                <h3 class="text-2xl font-medium text-text-primary mb-4">Žádné nástroje</h3>
-                <p class="text-text-secondary text-lg mb-8">V katalogu zatím nejsou žádné nástroje.</p>
-                <a href="{% url 'vytvor_nastroj' %}" 
-                   class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg">
-                    <i class="fas fa-plus mr-2"></i>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card text-center p-5">
+            <div class="mb-4">
+                <i class="fas fa-music fa-3x text-muted"></i>
+            </div>
+            <h3 class="h4 mb-3">Žádné nástroje</h3>
+            <p class="text-muted mb-4">V katalogu zatím nejsou žádné nástroje.</p>
+            <div class="text-center">
+                <a href="{% url 'vytvor_nastroj' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
                     Přidat první nástroj
                 </a>
             </div>
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 {% endblock %}

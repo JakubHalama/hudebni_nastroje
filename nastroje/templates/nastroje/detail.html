@@ -4,155 +4,181 @@
 {% block title %}{{ nastroj.nazev }} - Detail{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<style>
+/* Consistent icon container styling */
+.icon-container {
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+    min-height: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bs-primary);
+    border-radius: 50%;
+    margin-right: 1rem;
+    padding: 0;
+}
+
+.icon-container i {
+    font-size: 1.2rem;
+    color: white;
+    line-height: 1;
+}
+
+/* Ensure consistent text alignment */
+.list-group-item .d-flex {
+    align-items: center;
+}
+
+.list-group-item p {
+    margin: 0;
+}
+</style>
+
+<div class="container">
     <!-- Breadcrumb -->
-    <nav class="flex mb-8 text-text-secondary" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-2">
-            <li class="inline-flex items-center">
-                <a href="{% url 'seznam_nastroju' %}" class="hover:text-text-accent transition-colors duration-200">
-                    <i class="fas fa-home mr-2"></i>Katalog
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'seznam_nastroju' %}">
+                    <i class="fas fa-home me-1"></i>Katalog
                 </a>
             </li>
-            <li>
-                <i class="fas fa-chevron-right mx-2 text-text-secondary"></i>
-            </li>
-            <li class="text-text-accent">{{ nastroj.nazev }}</li>
+            <li class="breadcrumb-item active">{{ nastroj.nazev }}</li>
         </ol>
     </nav>
 
-    <div class="glass-card overflow-hidden">
-        <div class="md:flex">
+    <div class="card">
+        <div class="row g-0">
             <!-- Image Section -->
-            <div class="md:w-1/2">
-                <div class="relative pt-[100%] group">
+            <div class="col-md-6">
+                <div class="position-relative" style="padding-top: 100%;">
                     {% if nastroj.obrazek %}
-                        <div class="absolute inset-0 bg-dark-accent/50 p-4">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 p-4">
                             <img src="{{ nastroj.obrazek.url }}" 
                                  alt="{{ nastroj.nazev }}" 
-                                 class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                                 class="w-100 h-100 object-fit-contain">
                         </div>
                     {% else %}
-                        <div class="absolute inset-0 flex items-center justify-center bg-dark-accent/50">
-                            <i class="fas fa-music text-6xl text-text-secondary opacity-30 animate-float"></i>
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                            <i class="fas fa-music fa-3x text-muted opacity-25"></i>
                         </div>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Details Section -->
-            <div class="md:w-1/2 p-8">
-                <div class="flex items-center justify-between mb-8">
-                    <h1 class="text-3xl font-bold text-text-primary">{{ nastroj.nazev }}</h1>
-                    {% if nastroj.cena %}
-                        <div class="bg-text-accent/90 text-white px-6 py-2 rounded-full font-semibold backdrop-blur-sm">
-                            {{ nastroj.cena }} Kč
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div class="space-y-6">
-                    <div class="glass-card p-4 hover:border-text-accent transition-colors duration-300">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                                <i class="fas fa-tag text-white"></i>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h2">{{ nastroj.nazev }}</h1>
+                        {% if nastroj.cena %}
+                            <span class="badge bg-primary fs-5">{{ nastroj.cena }} Kč</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="list-group mb-4">
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-container">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Typ nástroje</small>
+                                    <span class="fs-5">{{ nastroj.get_typ_display }}</span>
+                                </div>
                             </div>
-                            <div class="ml-4">
-                                <h2 class="text-sm text-text-secondary">Typ nástroje</h2>
-                                <p class="text-lg text-text-primary">{{ nastroj.get_typ_display }}</p>
+                        </div>
+
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-container">
+                                    <i class="fas fa-industry"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Výrobce</small>
+                                    <a href="{% url 'detail_vyrobce' nastroj.vyrobce.id %}" 
+                                       class="fs-5 text-decoration-none">
+                                        {{ nastroj.vyrobce }}
+                                    </a>
+                                </div>
                             </div>
                         </div>
+
+                        {% if nastroj.barva %}
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-container">
+                                    <i class="fas fa-palette"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Barva</small>
+                                    <span class="fs-5">{{ nastroj.barva }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if nastroj.material %}
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-container">
+                                    <i class="fas fa-cube"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Materiál</small>
+                                    <span class="fs-5">{{ nastroj.material }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if nastroj.popis %}
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-container">
+                                    <i class="fas fa-align-left"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Popis</small>
+                                    <p class="fs-5">{{ nastroj.popis }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
 
-                    <div class="glass-card p-4 hover:border-text-accent transition-colors duration-300">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                                <i class="fas fa-industry text-white"></i>
-                            </div>
-                            <div class="ml-4">
-                                <h2 class="text-sm text-text-secondary">Výrobce</h2>
-                                <a href="{% url 'detail_vyrobce' nastroj.vyrobce.id %}" 
-                                   class="text-lg text-text-primary hover:text-text-accent transition-colors duration-300">
-                                    {{ nastroj.vyrobce }}
-                                </a>
-                            </div>
-                        </div>
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a href="{% url 'upravit_nastroj' nastroj.id %}" class="btn btn-primary flex-fill">
+                            <i class="fas fa-edit me-2"></i>
+                            Upravit
+                        </a>
+                        <a href="{% url 'smazat_nastroj' nastroj.id %}" class="btn btn-danger flex-fill">
+                            <i class="fas fa-trash-alt me-2"></i>
+                            Smazat
+                        </a>
                     </div>
-
-                    {% if nastroj.barva %}
-                    <div class="glass-card p-4 hover:border-text-accent transition-colors duration-300">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                                <i class="fas fa-palette text-white"></i>
-                            </div>
-                            <div class="ml-4">
-                                <h2 class="text-sm text-text-secondary">Barva</h2>
-                                <p class="text-lg text-text-primary">{{ nastroj.barva }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% if nastroj.material %}
-                    <div class="glass-card p-4 hover:border-text-accent transition-colors duration-300">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                                <i class="fas fa-cube text-white"></i>
-                            </div>
-                            <div class="ml-4">
-                                <h2 class="text-sm text-text-secondary">Materiál</h2>
-                                <p class="text-lg text-text-primary">{{ nastroj.material }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% if nastroj.popis %}
-                    <div class="glass-card p-4 hover:border-text-accent transition-colors duration-300">
-                        <div class="flex items-start">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-align-left text-white"></i>
-                            </div>
-                            <div class="ml-4">
-                                <h2 class="text-sm text-text-secondary">Popis</h2>
-                                <p class="text-text-primary leading-relaxed mt-2">{{ nastroj.popis }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="mt-8 flex space-x-4">
-                    <a href="{% url 'upravit_nastroj' nastroj.id %}" 
-                       class="flex-1 text-center px-6 py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
-                        <i class="fas fa-edit mr-2"></i>
-                        Upravit
-                    </a>
-                    <a href="{% url 'smazat_nastroj' nastroj.id %}" 
-                       class="flex-1 text-center px-6 py-3.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center">
-                        <i class="fas fa-trash-alt mr-2"></i>
-                        Smazat
-                    </a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Back Button and Actions -->
-    <div class="mt-8 flex justify-between items-center">
-        <a href="{% url 'seznam_nastroju' %}" 
-           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-dark-accent to-dark-secondary text-white rounded-lg hover:from-dark-secondary hover:to-dark-accent transition-all duration-300 group">
-            <i class="fas fa-arrow-left mr-2 transform group-hover:-translate-x-2 transition-transform duration-300"></i>
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <a href="{% url 'seznam_nastroju' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>
             Zpět na seznam nástrojů
         </a>
         
-        <div class="flex space-x-4">
-            <button class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-dark-accent to-dark-secondary text-white rounded-lg hover:from-dark-secondary hover:to-dark-accent transition-all duration-300 transform hover:-translate-y-0.5">
-                <i class="fas fa-share-alt mr-2"></i>
+        <div class="btn-group">
+            <button class="btn btn-outline-secondary">
+                <i class="fas fa-share-alt me-2"></i>
                 Sdílet
             </button>
-            <button class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-dark-accent to-dark-secondary text-white rounded-lg hover:from-dark-secondary hover:to-dark-accent transition-all duration-300 transform hover:-translate-y-0.5">
-                <i class="fas fa-print mr-2"></i>
+            <button class="btn btn-outline-secondary">
+                <i class="fas fa-print me-2"></i>
                 Tisk
             </button>
         </div>

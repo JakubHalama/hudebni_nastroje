@@ -4,75 +4,82 @@
 {% block title %}Seznam výrobců{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="container py-4">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-text-primary">Seznam výrobců</h1>
-        <a href="{% url 'vytvorit_vyrobce' %}" 
-           class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300">
-            <i class="fas fa-plus mr-2"></i>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">Seznam výrobců</h1>
+            <p class="text-muted mb-0">Celkem: {{ vyrobci.count }} výrobců</p>
+        </div>
+        <a href="{% url 'vytvorit_vyrobce' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>
             Přidat výrobce
         </a>
     </div>
 
     <!-- Grid of Manufacturers -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
         {% for vyrobce in vyrobci %}
-        <div class="glass-card hover:border-text-accent transition-all duration-300">
-            <div class="p-6">
-                <div class="flex items-center space-x-4">
-                    {% if vyrobce.logo %}
-                        <div class="w-16 h-16 bg-dark-accent/30 rounded-lg overflow-hidden">
-                            <img src="{{ vyrobce.logo.url }}" 
-                                 alt="{{ vyrobce.nazev }}" 
-                                 class="w-full h-full object-contain p-2">
-                        </div>
-                    {% else %}
-                        <div class="w-16 h-16 bg-dark-accent/30 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-industry text-3xl text-text-secondary opacity-30"></i>
-                        </div>
-                    {% endif %}
-                    
-                    <div class="flex-1">
-                        <h2 class="text-xl font-semibold text-text-primary mb-1">{{ vyrobce.nazev }}</h2>
-                        {% if vyrobce.zeme %}
-                            <p class="text-text-secondary flex items-center">
-                                <i class="fas fa-globe mr-2"></i>
-                                {{ vyrobce.zeme }}
-                            </p>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        {% if vyrobce.logo %}
+                            <div class="bg-light rounded me-2" style="width: 48px; height: 48px;">
+                                <img src="{{ vyrobce.logo.url }}" 
+                                     alt="{{ vyrobce.nazev }}" 
+                                     class="w-100 h-100 object-fit-contain p-1">
+                            </div>
+                        {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center me-2" style="width: 48px; height: 48px;">
+                                <i class="fas fa-industry text-muted"></i>
+                            </div>
                         {% endif %}
+                        
+                        <div class="flex-grow-1 min-width-0">
+                            <h6 class="card-title mb-0 text-truncate">{{ vyrobce.nazev }}</h6>
+                            {% if vyrobce.zeme %}
+                                <small class="text-muted d-flex align-items-center">
+                                    <i class="fas fa-globe me-1"></i>
+                                    {{ vyrobce.zeme }}
+                                </small>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
 
-                <div class="mt-4">
-                    <div class="text-text-secondary text-sm flex items-center">
-                        <i class="fas fa-music mr-2"></i>
-                        Počet nástrojů: {{ vyrobce.nastroje.count }}
+                    <div class="d-flex align-items-center text-muted small mb-2">
+                        <i class="fas fa-music me-1"></i>
+                        <span>{{ vyrobce.nastroje.count }} nástrojů</span>
                     </div>
-                </div>
 
-                <!-- Action Buttons -->
-                <div class="mt-4 flex space-x-2">
-                    <a href="{% url 'detail_vyrobce' vyrobce.id %}" 
-                       class="flex-1 text-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300">
-                        <i class="fas fa-eye mr-2"></i>
-                        Detail
-                    </a>
-                    <a href="{% url 'smazat_vyrobce' vyrobce.id %}" 
-                       class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-300">
-                        <i class="fas fa-trash-alt"></i>
-                    </a>
+                    <!-- Action Buttons -->
+                    <div class="btn-group w-100">
+                        <a href="{% url 'detail_vyrobce' vyrobce.id %}" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>
+                            Detail
+                        </a>
+                        <a href="{% url 'smazat_vyrobce' vyrobce.id %}" 
+                           class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-span-full text-center py-12">
-            <div class="text-text-secondary">
-                <i class="fas fa-industry text-6xl mb-4 opacity-30"></i>
-                <p class="text-xl">Zatím nejsou přidáni žádní výrobci.</p>
-                <a href="{% url 'vytvorit_vyrobce' %}" class="text-text-accent hover:text-text-accent/80 transition-colors duration-300">
-                    Přidat prvního výrobce
-                </a>
+        <div class="col-12">
+            <div class="card text-center p-5">
+                <div class="mb-3">
+                    <i class="fas fa-industry fa-3x text-muted opacity-50"></i>
+                </div>
+                <h3 class="h5 mb-3">Zatím nejsou přidáni žádní výrobci</h3>
+                <div>
+                    <a href="{% url 'vytvorit_vyrobce' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        Přidat prvního výrobce
+                    </a>
+                </div>
             </div>
         </div>
         {% endfor %}

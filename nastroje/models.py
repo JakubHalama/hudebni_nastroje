@@ -39,3 +39,26 @@ class HudebniNastroj(models.Model):
     class Meta:
         verbose_name = 'Hudební nástroj'
         verbose_name_plural = 'Hudební nástroje'
+
+class Recenze(models.Model):
+    HODNOCENI_CHOICES = [
+        (1, '1 hvězda'),
+        (2, '2 hvězdy'),
+        (3, '3 hvězdy'),
+        (4, '4 hvězdy'),
+        (5, '5 hvězd'),
+    ]
+
+    nastroj = models.ForeignKey(HudebniNastroj, on_delete=models.CASCADE, related_name='recenze', verbose_name='Hudební nástroj')
+    autor = models.CharField(max_length=100, verbose_name='Autor recenze')
+    hodnoceni = models.IntegerField(choices=HODNOCENI_CHOICES, verbose_name='Hodnocení')
+    text = models.TextField(verbose_name='Text recenze')
+    datum = models.DateTimeField(auto_now_add=True, verbose_name='Datum přidání')
+    
+    def __str__(self):
+        return f'Recenze od {self.autor} na {self.nastroj.nazev}'
+    
+    class Meta:
+        verbose_name = 'Recenze'
+        verbose_name_plural = 'Recenze'
+        ordering = ['-datum']

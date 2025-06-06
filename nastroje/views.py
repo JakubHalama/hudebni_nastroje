@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import HudebniNastroj, Vyrobce
+from .models import HudebniNastroj, Vyrobce, Recenze
 from django.contrib import messages
-from .forms import HudebniNastrojForm, VyrobceForm
+from .forms import HudebniNastrojForm, VyrobceForm, RecenzeForm
 from django.db import models
 from django.http import JsonResponse
 
@@ -40,7 +40,24 @@ def seznam_nastroju(request):
 # Detail nástroje
 def detail_nastroje(request, pk):
     nastroj = get_object_or_404(HudebniNastroj, pk=pk)
-    return render(request, 'nastroje/detail.html', {'nastroj': nastroj})
+    recenze = nastroj.recenze.all().order_by('-datum')
+    
+    if request.method == 'POST':
+        form = RecenzeForm(request.POST)
+        if form.is_valid():
+            recenze = form.save(commit=False)
+            recenze.nastroj = nastroj
+            recenze.save()
+            messages.success(request, 'Recenze byla úspěšně přidána.')
+            return redirect('detail_nastroje', pk=pk)
+    else:
+        form = RecenzeForm()
+    
+    return render(request, 'nastroje/detail.html', {
+        'nastroj': nastroj,
+        'recenze': recenze,
+        'form': form
+    })
 
 # Vytvoření nového nástroje
 def vytvor_nastroj(request):
